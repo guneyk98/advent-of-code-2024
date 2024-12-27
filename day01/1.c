@@ -10,7 +10,7 @@ int main(void)
 {
 	FILE *fp = fopen("input.txt", "r");
 	if (!fp) {
-		perror("Failed to open input.txt");
+		fprintf(stderr, "Failed to open input.txt");
 		return EXIT_FAILURE;
 	}
 	
@@ -19,14 +19,18 @@ int main(void)
 	int *L = malloc(sizeof(int) * numLines); 
 	int *R = malloc(sizeof(int) * numLines);
 	if (!R || !L) {
-		perror("Failed to allocate memory");
+		fprintf(stderr, "Failed to allocate memory");
 		return EXIT_FAILURE;
 	}
 	
 	char lineStr[MAX_LINE_LEN];
 	for (size_t i = 0; i < numLines; ++i) {
 		fgets(lineStr, sizeof(lineStr), fp);
-		sscanf(lineStr, "%d %d", L+i, R+i);
+
+		if (sscanf(lineStr, "%d %d", L+i, R+i) != 2) {
+			fprintf(stderr, "Failed to parse line %zu", i);
+			return EXIT_FAILURE;
+		}
 	}
 
 	qsort(L, numLines, sizeof(int), CompareInts);
@@ -62,7 +66,7 @@ size_t CountLines(FILE *fp) {
 	while (!feof(fp)) {
 		size_t n = fread(buffer, 1, sizeof(buffer), fp);
 		if (ferror(fp)) {
-			perror("Error while reading file");
+			fprintf(stderr, "Error while reading file");
 			exit(EXIT_FAILURE);
 		}
 		for (size_t i = 0; i < n; ++i)
