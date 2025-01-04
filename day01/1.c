@@ -10,7 +10,7 @@ int main(void)
 {
 	FILE *fp = fopen("input.txt", "r");
 	if (!fp) {
-		fprintf(stderr, "Failed to open input.txt");
+		fprintf(stderr, "Failed to open input.txt\n");
 		return EXIT_FAILURE;
 	}
 	
@@ -19,16 +19,18 @@ int main(void)
 	int *L = malloc(sizeof(int) * numLines); 
 	int *R = malloc(sizeof(int) * numLines);
 	if (!R || !L) {
-		fprintf(stderr, "Failed to allocate memory");
+		fprintf(stderr, "Failed to allocate memory\n");
 		return EXIT_FAILURE;
 	}
 	
 	char lineStr[MAX_LINE_LEN];
 	for (size_t i = 0; i < numLines; ++i) {
-		fgets(lineStr, sizeof(lineStr), fp);
-
+		if (!fgets(lineStr, sizeof(lineStr), fp)) {
+			fprintf(stderr, "Failed to read line %zu\n", i);
+			return EXIT_FAILURE;
+		}
 		if (sscanf(lineStr, "%d %d", L+i, R+i) != 2) {
-			fprintf(stderr, "Failed to parse line %zu", i);
+			fprintf(stderr, "Failed to parse string for line %zu\n", i);
 			return EXIT_FAILURE;
 		}
 	}
@@ -66,7 +68,7 @@ size_t CountLines(FILE *fp) {
 	while (!feof(fp)) {
 		size_t n = fread(buffer, 1, sizeof(buffer), fp);
 		if (ferror(fp)) {
-			fprintf(stderr, "Error while reading file");
+			fprintf(stderr, "Error while reading file\n");
 			exit(EXIT_FAILURE);
 		}
 		for (size_t i = 0; i < n; ++i)
