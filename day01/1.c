@@ -25,9 +25,12 @@ int main(void)
 	
 	char lineStr[MAX_LINE_LEN];
 	for (size_t i = 0; i < numLines; ++i) {
-		if (!fgets(lineStr, sizeof(lineStr), fp)) {
-			fprintf(stderr, "Failed to read line %zu\n", i);
-			return EXIT_FAILURE;
+		if (fgets(lineStr, sizeof(lineStr), fp) == NULL) {
+			if (ferror(fp)) {
+				fprintf(stderr, "Failed to read line %zu\n", i);
+				return EXIT_FAILURE;
+			}
+			break;
 		}
 		if (sscanf(lineStr, "%d %d", L+i, R+i) != 2) {
 			fprintf(stderr, "Failed to parse string for line %zu\n", i);
